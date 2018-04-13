@@ -1,0 +1,81 @@
+
+.uploadize-row {
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    padding: 5px;
+    display: flex;
+    font-size: 12px;
+
+    .uploadize-filename {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        padding-right: 5px;
+    }
+
+    .uploadize-status {
+        position: relative;
+        width: 100%;
+        flex-grow: 3;
+
+        .uploadize-progress {
+            height: 100%;
+            width: 0%;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            text-transform: uppercase;
+            transition: width .4s ease-in;
+            animation: progress 0.7s linear infinite;
+            background-color: #089ecd;
+            background-image: linear-gradient( -45deg, rgba(#fff, 0.15) 25%, transparent 25%, transparent 50%, rgba(#fff, 0.15) 50%, rgba(#fff, 0.15) 75%, transparent 75% );
+            background-repeat: repeat-x;
+            background-size: 40px 40px;
+        }
+
+        &.error {
+            color: #C9302C;
+        }
+
+        &.message {
+            color: #34b966;
+            margin: 0px !important;
+            padding: 0px !important;
+            background-color: transparent !important;
+        }
+
+        @keyframes animatedBackground {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 20px 0;
+            }
+        }
+
+        .cancel {
+            height: 18px;
+            width: 18px;
+            position: absolute;
+            background-color: #333;
+            top: -9px;
+            right: -9px;
+            border-radius: 50%;
+            box-sizing: content-box;
+
+            &:before, &:after {
+                content: '';
+                width: 10px;
+                height: 2px;
+                background-color: #fff;
+                position: absolute;
+                top: 8px;
+                left: 4px;
+                transform: rotate(45deg);
+            }
+            &:after {
+                transform: rotate(-45deg);
+            }
+        }
+    }
+}

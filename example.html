@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>Uploadize Example</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/uploadize.css">
+
+</head>
+
+<body>
+
+    <div id="uploadForm"></div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/sha1.js"></script>
+    <script src="assets/js/uploadize.js"></script>
+    <script>
+    $('#uploadForm').uploadize({
+        url:'/', //upload processor
+        fileTypes:[], //supported file types, if empty all files will be supported
+        maxFileSize:4194304,
+        started: function() {
+            // started callback
+            alert('started');
+        },
+        completed:function(data) {
+            //completed callback
+            alert('Completed');
+        },
+        failed: function(data){
+            // failed callback
+            alert('Failed');
+        },
+        cancelled:function(data) {
+            //cancelled callback
+            alert('Cancelled');
+        }
+    });
+    </script>
+</body>
+</html>

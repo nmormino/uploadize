@@ -1,5 +1,5 @@
 (function ( $ ) {
- 
+
     $.fn.uploadize = function(config) {
 
         var url = config.url;
@@ -18,25 +18,23 @@
         var uploadize = this;
         var cancelledFiles = [];
 
-        var processQueue = function(fieldId, files){
-            
-            $.each(files, function(key, file){
+        var processQueue = function(fieldId, files) {
 
-                if(file)
-                {
-                    $('#uploadize-img-'+file.id).removeClass('uploadize-pending').addClass('uploadize-uploading');                
-                    uploadFile(fieldId, file, 0);    
+            $.each(files, function(key, file) {
+
+                if(file) {
+                    $('#uploadize-img-'+file.id).removeClass('uploadize-pending').addClass('uploadize-uploading');
+                    uploadFile(fieldId, file, 0);
                 }
 
             });
-
 
         }
 
         function uploadFile(fieldId, file, chunk) {
 
-            if($.inArray(file.id, cancelledFiles) === -1)
-            {
+            if($.inArray(file.id, cancelledFiles) === -1) {
+
                 var formData = new FormData();
 
                 formData.append('name', file.name);
@@ -52,26 +50,29 @@
 
                     $('#uploadize-progress-'+file.id).css('width', (((chunk+1)/file.chunks.length)*100)+'%');
 
-                    if(file.chunks[chunk+1] != undefined)
-                    {
+                    if(file.chunks[chunk+1] != undefined) {
+
                         uploadFile(fieldId, file, chunk+1);
-                    }
-                    else
-                    {
+
+                    } else {
+
                         $('#uploadize-'+file.id+' .uploadize-status').addClass('message').html('File upload complete.');
                         $('#uploadize-'+file.id+' .cancel').remove();
 
                         if (typeof completed === 'function') {
+
                             var data = JSON.parse(e.srcElement.response);
                             data.fieldId = fieldId;
                             data.fileId = file.id;
                             completed(data);
+
                         }
 
                     }
                 };
 
                 xhr.send(formData);  // multipart/form-data
+
             }
         }
 
@@ -82,12 +83,12 @@
             var fieldId = field.attr('id');
             var fileQueue = [];
             var files = field[0].files;
-            
+
             if (typeof started === 'function') {
                 started({fieldId:fieldId, files:files});
             }
 
-            $.each(files, function(fileIndex, file){
+            $.each(files, function(fileIndex, file) {
 
                 var chunkIt = function() {
 
@@ -101,9 +102,8 @@
                                         '</div>'+
                                     '</div>';
                     field.parent().append(fileHTML);
-                    
-                    if(fileTypes.length > 0 && $.inArray(file.type, fileTypes) === -1)
-                    {
+
+                    if(fileTypes.length > 0 && $.inArray(file.type, fileTypes) === -1) {
                         $('#uploadize-'+fileId+' .uploadize-status').addClass('error').html('FAILED: This file type is not allowed.');
                         $('#uploadize-'+fileId+' .cancel').remove();
 
@@ -112,12 +112,13 @@
                         delete files[fileIndex];
                         cancelledFiles.push(fileId);
                         fileQueue.push(false);
+
                         if (typeof failed === 'function') {
                             failed({fileId:fileId, fieldId:fieldId});
                         }
-                    }
-                    else if(file.size > maxFileSize){
-                        var mb = maxFileSize/1024/1024 
+
+                    } else if(file.size > maxFileSize) {
+                        var mb = maxFileSize/1024/1024
                         $('#uploadize-'+fileId+' .uploadize-status').addClass('error').html('FAILED: This file exceeds the '+mb+'mb file size limit.');
                         $('#uploadize-'+fileId+' .cancel').remove();
 
@@ -129,16 +130,16 @@
                         if (typeof failed === 'function') {
                             failed({fileId:fileId, fieldId:fieldId});
                         }
-                    }
-                    else
-                    {
+
+                    } else {
+
                         //cancel button
-                        $('.cancel-'+fileId).click(function(data){
+                        $('.cancel-'+fileId).click(function(data) {
 
                             delete files[fileIndex];
                             cancelledFiles.push(fileId);
-                            $.post(url, {cancel:true, name:file.name, hash:hash}, function(data){ 
-                                
+                            $.post(url, {cancel:true, name:file.name, hash:hash}, function(data) {
+
                                 $('#uploadize-'+fileId+' .uploadize-status').addClass('message').html('This file upload has been cancelled.');
                                 $('#uploadize-'+fileId+' .cancel').remove();
 
@@ -147,28 +148,24 @@
                             if (typeof cancelled === 'function') {
                                 cancelled({filename:file.name, hash:hash, fieldId:fieldId, fileId:fileId});
                             }
+
                         });
 
                         var chunks = [];
-                        var chunker = function(file, offset)
-                        {
+                        var chunker = function(file, offset) {
                             chunks.push(file.slice(offset, offset+chunkSize,'application/octet-stream'));
 
-                            if(chunks.length < totalChunks)
-                            {
-                                chunker(file, offset+chunkSize);    
-                            }
-                            else
-                            {
-                                fileQueue.push({id:fileId, fieldId:fieldId, hash:hash, name:file.name, chunks:chunks, size:file.size, type:file.type, file:file});        
+                            if(chunks.length < totalChunks) {
+                                chunker(file, offset+chunkSize);
+                            } else {
+                                fileQueue.push({id:fileId, fieldId:fieldId, hash:hash, name:file.name, chunks:chunks, size:file.size, type:file.type, file:file});
                             }
                         }
 
                         chunker(file, 0);
                     }
 
-                    if(files.length == fileQueue.length)
-                    {
+                    if(files.length == fileQueue.length) {
                         processQueue(fieldId, fileQueue);
                     }
                 }
@@ -178,8 +175,7 @@
             });
         }
 
-        function generateContainer(index, container)
-        {
+        function generateContainer(index, container) {
             fieldId = window.performance.now().toString().replace(/\./g,'-');
             field = $('<input type="file" multiple>');
             field.attr('id', 'uploadize-'+fieldId);
@@ -189,7 +185,7 @@
 
             $('#label-'+index).attr('for', 'uploadize-'+fieldId);
 
-            field.change(function(e){
+            field.change(function(e) {
                 e.preventDefault();
                 beginUploadProcess(this);
                 fieldId = generateContainer(index, container);
@@ -198,8 +194,7 @@
             return fieldId;
         }
 
-        function createUploadBlock(index, container)
-        {
+        function createUploadBlock(index, container) {
             $(container).html('<div class="uploadize"></div>');
             container = $(container).find('.uploadize');
 
@@ -209,14 +204,12 @@
             button.attr('id', 'label-'+index);
             button.wrap('<div class="uploadize-button">');
             button.appendTo(container);
-            
-            
+
             generateContainer(index, container[0]);
         }
 
         $(this).each(function(index, field) {
             createUploadBlock(index, field);
         });
-        
     }
 })(jQuery);
